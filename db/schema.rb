@@ -10,9 +10,49 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_06_29_135435) do
+ActiveRecord::Schema[7.1].define(version: 2025_06_29_142459) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "goal_phases", force: :cascade do |t|
+    t.bigint "goal_id", null: false
+    t.integer "phase_number"
+    t.string "title"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["goal_id"], name: "index_goal_phases_on_goal_id"
+  end
+
+  create_table "goals", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "identity_statement"
+    t.text "why_it_matters"
+    t.text "success_definition"
+    t.integer "time_commitment_minutes"
+    t.string "current_level"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_goals_on_user_id"
+  end
+
+  create_table "habit_logs", force: :cascade do |t|
+    t.bigint "habit_id", null: false
+    t.integer "duration_minutes"
+    t.datetime "logged_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["habit_id"], name: "index_habit_logs_on_habit_id"
+  end
+
+  create_table "habits", force: :cascade do |t|
+    t.bigint "goal_id", null: false
+    t.string "title"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["goal_id"], name: "index_habits_on_goal_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -26,4 +66,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_29_135435) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "goal_phases", "goals"
+  add_foreign_key "goals", "users"
+  add_foreign_key "habit_logs", "habits"
+  add_foreign_key "habits", "goals"
 end
